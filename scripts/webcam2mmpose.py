@@ -45,7 +45,7 @@ class MinimalPublisher(Node):
         timer_period = 0.01  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
-#/home/chihan/standChair_ws2/src/mmposeCalc/mmposeCalc/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py
+        #/home/chihan/standChair_ws2/src/mmposeCalc/mmposeCalc/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py
         directoryRtmPose = 'src/mmposeCalc/mmposeCalc/rtmpose/'
 
         self.det_config = directoryRtmPose + 'rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py'
@@ -135,6 +135,8 @@ class MinimalPublisher(Node):
 
         # predict keypoints
         pose_results = inference_topdown(pose_estimator, img, bboxes)
+
+        # print(pose_results)
         data_samples = merge_data_samples(pose_results)
 
         # show the results
@@ -165,7 +167,7 @@ class MinimalPublisher(Node):
         msg = String()
         msg.data = 'Hello World: %d' % self.i
         self.publisher_.publish(msg)
-        self.get_logger().info('Publishing: "%s"' % msg.data)
+        # self.get_logger().info('Publishing: "%s"' % msg.data)
         self.i += 1
 
         if self.cap.isOpened():
@@ -179,8 +181,7 @@ class MinimalPublisher(Node):
             pred_instances = self.process_one_image(frame, self.detector,
                                                self.pose_estimator, self.visualizer,
                                                0.001)
-
-
+            print("Left Ankle:",pred_instances.keypoints[0][15],"Right Ankle:",pred_instances.keypoints[0][16])
 
 def main(args=None):
     rclpy.init(args=args)
