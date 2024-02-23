@@ -181,7 +181,7 @@ class MinimalPublisher(Node):
             pred_instances = self.process_one_image(frame, self.detector,
                                                self.pose_estimator, self.visualizer,
                                                0.001)
-            print("Left Ankle:",pred_instances.keypoints[0][15],"Right Ankle:",pred_instances.keypoints[0][16])
+            print("Left Ankle X,%:",pred_instances.keypoints[0][15][0],pred_instances.keypoint_scores[0][15],"Right Ankle X,%:",pred_instances.keypoints[0][16][0],pred_instances.keypoint_scores[0][16])
 
 def main(args=None):
     rclpy.init(args=args)
