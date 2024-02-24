@@ -15,22 +15,24 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
+find_package(tutorial_interfaces REQUIRED)     
+find_package(geometry_msgs REQUIRED)
 
 # Include Cpp "include" directory
 include_directories(include)
 
-#[[
+
 
 # Create Cpp executable
-add_executable(cpp_executable src/cpp_node.cpp)
-ament_target_dependencies(cpp_executable rclcpp)
+add_executable(controller src/controller.cpp)
+ament_target_dependencies(controller rclcpp geometry_msgs tutorial_interfaces)
 
 # Install Cpp executables
 install(TARGETS
-  cpp_executable
+  controller
   DESTINATION lib/${PROJECT_NAME}
 )
-]]
+
 
 # Install Python modules
 ament_python_install_package(${PROJECT_NAME})

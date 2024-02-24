@@ -30,6 +30,8 @@ from mmpose.registry import VISUALIZERS
 from mmpose.structures import merge_data_samples, split_instances
 from mmpose.utils import adapt_mmdet_pipeline
 
+from tutorial_interfaces.msg import Ankles  
+
 try:
     from mmdet.apis import inference_detector, init_detector
     has_mmdet = True
@@ -41,10 +43,9 @@ class MinimalPublisher(Node):
 
     def __init__(self):
         super().__init__('minimal_publisher')
-        self.publisher_ = self.create_publisher(String, 'topic', 10)
+        self.publisher_ = self.create_publisher(Ankles, 'ankles', 10)
         timer_period = 0.01  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
-        self.i = 0
         #/home/chihan/standChair_ws2/src/mmposeCalc/mmposeCalc/rtmpose/rtmdet/person/rtmdet_nano_320-8xb32_coco-person.py
         directoryRtmPose = 'src/mmposeCalc/mmposeCalc/rtmpose/'
 
@@ -164,11 +165,7 @@ class MinimalPublisher(Node):
 
 
     def timer_callback(self):
-        msg = String()
-        msg.data = 'Hello World: %d' % self.i
-        self.publisher_.publish(msg)
-        # self.get_logger().info('Publishing: "%s"' % msg.data)
-        self.i += 1
+
 
         if self.cap.isOpened():
             success, frame = self.cap.read()
@@ -181,7 +178,16 @@ class MinimalPublisher(Node):
             pred_instances = self.process_one_image(frame, self.detector,
                                                self.pose_estimator, self.visualizer,
                                                0.001)
-            print("Left Ankle X,%:",pred_instances.keypoints[0][15][0],pred_instances.keypoint_scores[0][15],"Right Ankle X,%:",pred_instances.keypoints[0][16][0],pred_instances.keypoint_scores[0][16])
+
+            msg = Ankles()
+            msg.right.x = float(pred_instances.keypoints[0][16][0])
+            msg.right.y = float(pred_instances.keypoints[0][16][1])
+            msg.left.x = float(pred_instances.keypoints[0][15][0])
+            msg.left.y = float(pred_instances.keypoints[0][15][1]) 
+            msg.right_score = float(pred_instances.keypoint_scores[0][16])
+            msg.left_score = float(pred_instances.keypoint_scores[0][15])
+            self.publisher_.publish(msg)
+            self.get_logger().info('Left Ankle X,Score %09.6f, %1.7f, Right Ankle X,Score %09.6f, %1.7f' % (pred_instances.keypoints[0][15][0],pred_instances.keypoint_scores[0][15],pred_instances.keypoints[0][16][0],pred_instances.keypoint_scores[0][16]))
 
 def main(args=None):
     rclpy.init(args=args)
